@@ -101,3 +101,27 @@ main{position:relative;z-index:1}
   .hero .star-dot{animation-duration:2.4s}
   .petal{width:10px;height:15px}
 }
+.rotate-hint{display:none;position:fixed;inset:0;z-index:90;background:rgba(12,10,28,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px}
+.rotate-hint.show{display:flex}
+.rotate-card{background:linear-gradient(160deg,rgba(46,36,82,.95),rgba(26,22,55,.95));border:1px solid rgba(244,196,223,.35);border-radius:22px;padding:34px 30px 28px;text-align:center;max-width:320px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.rotate-phone{width:56px;height:56px;margin:0 auto 16px;position:relative}
+.rotate-phone span{position:absolute;inset:0;border:2px solid #f4c4df;border-radius:11px;animation:rotatePhone 1.9s ease-in-out infinite}
+.rotate-phone::after{content:"";position:absolute;left:50%;bottom:6px;width:10px;height:2px;border-radius:2px;background:#f4c4df;transform:translateX(-50%)}
+@keyframes rotatePhone{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(90deg)}}
+.rotate-card p{color:#f3e8f7;font-size:15px;letter-spacing:.06em;margin-bottom:20px}
+.rotate-close{background:linear-gradient(135deg,#f4a8d3,#c46fce);color:#3a2350;border:none;border-radius:999px;padding:10px 26px;font-size:14px;font-weight:600;cursor:pointer}
+@media(pointer:coarse) and (orientation:portrait){.rotate-hint.show{display:flex}}
+@media(pointer:coarse) and (orientation:landscape) and (max-height:520px){
+  .hero{min-height:100svh}
+  .hero-content{padding:84px 9vw 36px}
+  .hero-content h1{font-size:56px}
+  .hero-side-note,.hero-index,.scroll-cue{display:none}
+  .section-shell{padding:56px 6vw}
+  .gallery-grid{grid-template-columns:repeat(4,1fr);gap:14px}
+  .card-bottom b{font-size:15px}
+  .card-bottom small{font-size:9px}
+  .dream-stats{grid-template-columns:repeat(4,1fr);gap:10px;padding:44px 5vw}
+  .stat-item b{font-size:28px}
+  .game-area{height:230px}
+  .quiz-card,.wish-box{max-width:720px}
+}
