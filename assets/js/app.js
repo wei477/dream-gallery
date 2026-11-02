@@ -155,7 +155,7 @@
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add("visible");
-        downloadUrl
+        revealObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
