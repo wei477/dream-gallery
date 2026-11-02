@@ -299,7 +299,7 @@
       let best = 0;
       quizVotes.forEach((v, i) => { if (v > quizVotes[best]) best = i; });
       const scene = scenes[best];
-      quizStep.innerHTML = `<div class="quiz-result"><div class="qr-icon">✧</div><h3>${scene.name}</h3><p>${scene.description}</p><div class="quiz-actions"><button class="quiz-primary" id="quizEnter" type="button">进入这场梦</button><button class="quiz-ghost" id="quizRetry" type="button">重新测一次</button></div></div>`;
+      quizStep.innerHTML = `<div class="quiz-result"><div class="qr-icon">✧</div><h3>${scene.name}</h3><p>${scene.description}</p><div class="quiz-actions"><button class="quiz-primary" id="quizEnter" type="button">进入这场梦</button><button class="quiz-ghost" id="quizRetry" type="button">重新测一次</button></div>`;
       $("quizEnter").addEventListener("click", () => showScene(best));
       $("quizRetry").addEventListener("click", () => { quizIndex = 0; quizVotes = [0, 0, 0, 0]; renderQuiz(); });
     }
@@ -334,59 +334,75 @@
   renderWishes();
 
   // ===== 2.0 升级：Canvas 星空 / 打字机 / 3D tilt / 今日签 / 接星星 =====
-  const starCanvas = $("starCanvas"), sctx = starCanvas.getContext("2d");
-  let SW = 0, SH = 0, spts = [], smouse = { x: -999, y: -999 };
+  const isMobileView = window.matchMedia("(max-width:600px)").matches;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function initStars() {
-    SW = starCanvas.width = window.innerWidth;
-    SH = starCanvas.height = window.innerHeight;
-    const n = isMobileView ? 34 : 58;
-    spts = [];
-    for (let i = 0; i < n; i++) spts.push({
-      x: Math.random() * SW, y: Math.random() * SH,
-      vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
-      r: isMobileView ? Math.random() * 1.8 + 0.9 : Math.random() * 1.6 + 0.5
-    });
-  }
+  const starCanvas = $("starCanvas");
+  let sctx = null, SW = 0, SH = 0, DPR = 1, spts = [], smouse = { x: -999, y: -999 };
   const tapBursts = [];
-  function starFrame() {
-    sctx.clearRect(0, 0, SW, SH);
-    for (const p of spts) {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = SW; if (p.x > SW) p.x = 0; if (p.y < 0) p.y = SH; if (p.y > SH) p.y = 0;
-      sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 7);
-      sctx.fillStyle = isMobileView ? "rgba(255,214,238,.95)" : "rgba(244,196,223,.85)";
-      sctx.fill();
-      const d = Math.hypot(p.x - smouse.x, p.y - smouse.y);
-      if (d < 140) { sctx.beginPath(); sctx.moveTo(p.x, p.y); sctx.lineTo(smouse.x, smouse.y); sctx.strokeStyle = `rgba(244,168,211,${0.35 * (1 - d / 140)})`; sctx.stroke(); }
+  try {
+    sctx = starCanvas.getContext("2d");
+    function initStars() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2.5);
+      SW = window.innerWidth;
+      SH = window.innerHeight;
+      starCanvas.width = Math.floor(SW * DPR);
+      starCanvas.height = Math.floor(SH * DPR);
+      sctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      const n = isMobileView ? 34 : 58;
+      spts = [];
+      for (let i = 0; i < n; i++) spts.push({
+        x: Math.random() * SW, y: Math.random() * SH,
+        vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+        r: isMobileView ? Math.random() * 1.8 + 0.9 : Math.random() * 1.6 + 0.5
+      });
     }
-    for (let i = 0; i < spts.length; i++) {
-      for (let j = i + 1; j < spts.length; j++) {
-        const a = spts[i], b = spts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < 110) { sctx.beginPath(); sctx.moveTo(a.x, a.y); sctx.lineTo(b.x, b.y); sctx.strokeStyle = `rgba(178,80,181,${0.22 * (1 - d / 110)})`; sctx.stroke(); }
+    function starFrame() {
+      sctx.clearRect(0, 0, SW, SH);
+      for (const p of spts) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = SW; if (p.x > SW) p.x = 0; if (p.y < 0) p.y = SH; if (p.y > SH) p.y = 0;
+        sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 7);
+        sctx.fillStyle = isMobileView ? "rgba(255,214,238,.95)" : "rgba(244,196,223,.85)";
+        sctx.fill();
+        const d = Math.hypot(p.x - smouse.x, p.y - smouse.y);
+        if (d < 140) { sctx.beginPath(); sctx.moveTo(p.x, p.y); sctx.lineTo(smouse.x, smouse.y); sctx.strokeStyle = `rgba(244,168,211,${0.35 * (1 - d / 140)})`; sctx.stroke(); }
+      }
+      for (let i = 0; i < spts.length; i++) {
+        for (let j = i + 1; j < spts.length; j++) {
+          const a = spts[i], b = spts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 110) { sctx.beginPath(); sctx.moveTo(a.x, a.y); sctx.lineTo(b.x, b.y); sctx.strokeStyle = `rgba(178,80,181,${0.22 * (1 - d / 110)})`; sctx.stroke(); }
+        }
+      }
+      for (let i = tapBursts.length - 1; i >= 0; i--) {
+        const b = tapBursts[i];
+        sctx.beginPath(); sctx.arc(b.x, b.y, 6 + (1 - b.life) * 26, 0, 7);
+        sctx.strokeStyle = `rgba(255,214,238,${b.life * 0.8})`; sctx.lineWidth = 1.5; sctx.stroke();
+        sctx.beginPath(); sctx.arc(b.x, b.y, 2.2, 0, 7); sctx.fillStyle = `rgba(255,235,246,${b.life})`; sctx.fill();
+        b.life -= 0.035;
+        if (b.life <= 0) tapBursts.splice(i, 1);
       }
     }
-    for (let i = tapBursts.length - 1; i >= 0; i--) {
-      const b = tapBursts[i];
-      sctx.beginPath(); sctx.arc(b.x, b.y, 6 + (1 - b.life) * 26, 0, 7);
-      sctx.strokeStyle = `rgba(255,214,238,${b.life * 0.8})`; sctx.lineWidth = 1.5; sctx.stroke();
-      sctx.beginPath(); sctx.arc(b.x, b.y, 2.2, 0, 7); sctx.fillStyle = `rgba(255,235,246,${b.life})`; sctx.fill();
-      b.life -= 0.035;
-      if (b.life <= 0) tapBursts.splice(i, 1);
+    function starLoop() { starFrame(); requestAnimationFrame(starLoop); }
+    function handleResize() {
+      initStars();
+      if (reduceMotion) starFrame();
     }
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    window.addEventListener("pointermove", e => { smouse.x = e.clientX; smouse.y = e.clientY; }, { passive: true });
+    document.addEventListener("pointerdown", e => {
+      if (e.pointerType !== "touch") return;
+      if (/button|a|input|select|textarea|label/i.test(e.target.tagName)) return;
+      tapBursts.push({ x: e.clientX, y: e.clientY, life: 1 });
+    }, { passive: true });
+    initStars();
+    if (reduceMotion) starFrame(); else starLoop();
+    window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", e => {
+      if (e.matches) starFrame();
+    });
+  } catch (err) {
+    starCanvas.style.display = "none";
   }
-  function starLoop() { starFrame(); requestAnimationFrame(starLoop); }
-  window.addEventListener("resize", initStars);
-  window.addEventListener("pointermove", e => { smouse.x = e.clientX; smouse.y = e.clientY; }, { passive: true });
-  // 触屏点空白处：星光在指尖迸发
-  document.addEventListener("pointerdown", e => {
-    if (e.pointerType !== "touch") return;
-    if (/button|a|input|select|textarea|label/i.test(e.target.tagName)) return;
-    tapBursts.push({ x: e.clientX, y: e.clientY, life: 1 });
-  }, { passive: true });
-  const isMobileView = window.matchMedia("(max-width:600px)").matches;
-  initStars();
-  if (reduceMotion) starFrame(); else starLoop();
 
   // Hero 打字机轮播
   const phrases = ["这里，收藏着所有关于美好的想象。", "愿你在每一束光里，遇见心中柔软的风景。", "把心交给一场梦，慢慢走，慢慢看。"];
@@ -406,7 +422,6 @@
   }
   typeLoop();
 
-  // 展厅卡片 3D 倾斜（桌面）
   if (window.matchMedia("(hover:hover) and (pointer:fine)").matches) {
     document.querySelectorAll(".gallery-card").forEach(card => {
       card.addEventListener("pointermove", e => {
@@ -418,7 +433,6 @@
     });
   }
 
-  // 今日梦境签
   function renderDaily() {
     const now = new Date();
     const seed = now.getFullYear() * 1000 + (now.getMonth() + 1) * 40 + now.getDate();
@@ -436,7 +450,6 @@
   }
   renderDaily();
 
-  // 接星星小游戏
   let gameRunning = false, gameLeft = 30, gameScoreVal = 0, gameCountTimer = null, spawnTimer = null;
   const gameArea = $("gameArea");
   function spawnStar() {
@@ -491,8 +504,10 @@
     rotateDismissed = true;
     try { sessionStorage.setItem("dream_gallery_rotate_dismissed", "1"); } catch (e) {}
   });
-  window.addEventListener("orientationchange", () => {
+  function syncRotateHint() {
     if (!isPortrait()) rotateHint.classList.remove("show");
     else if (!rotateDismissed) rotateHint.classList.add("show");
-  });
+  }
+  window.addEventListener("orientationchange", syncRotateHint);
+  window.addEventListener("resize", syncRotateHint);
 })();
