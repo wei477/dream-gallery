@@ -239,6 +239,8 @@
     const max = document.documentElement.scrollHeight - window.innerHeight;
     progress.style.width = `${max > 0 ? (window.scrollY / max) * 100 : 0}%`;
     backTop.classList.toggle("show", window.scrollY > 500);
+    const hp = Math.min(1, window.scrollY / Math.max(1, window.innerHeight));
+    document.documentElement.style.setProperty("--scrollHp", hp);
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -338,16 +340,23 @@
   function initStars() {
     SW = starCanvas.width = window.innerWidth;
     SH = starCanvas.height = window.innerHeight;
-    const n = window.matchMedia("(max-width:600px)").matches ? 26 : 58;
+    const n = isMobileView ? 34 : 58;
     spts = [];
-    for (let i = 0; i < n; i++) spts.push({ x: Math.random() * SW, y: Math.random() * SH, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35, r: Math.random() * 1.6 + 0.5 });
+    for (let i = 0; i < n; i++) spts.push({
+      x: Math.random() * SW, y: Math.random() * SH,
+      vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+      r: isMobileView ? Math.random() * 1.8 + 0.9 : Math.random() * 1.6 + 0.5
+    });
   }
+  const tapBursts = [];
   function starFrame() {
     sctx.clearRect(0, 0, SW, SH);
     for (const p of spts) {
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0) p.x = SW; if (p.x > SW) p.x = 0; if (p.y < 0) p.y = SH; if (p.y > SH) p.y = 0;
-      sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 7); sctx.fillStyle = "rgba(244,196,223,.85)"; sctx.fill();
+      sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 7);
+      sctx.fillStyle = isMobileView ? "rgba(255,214,238,.95)" : "rgba(244,196,223,.85)";
+      sctx.fill();
       const d = Math.hypot(p.x - smouse.x, p.y - smouse.y);
       if (d < 140) { sctx.beginPath(); sctx.moveTo(p.x, p.y); sctx.lineTo(smouse.x, smouse.y); sctx.strokeStyle = `rgba(244,168,211,${0.35 * (1 - d / 140)})`; sctx.stroke(); }
     }
@@ -357,10 +366,25 @@
         if (d < 110) { sctx.beginPath(); sctx.moveTo(a.x, a.y); sctx.lineTo(b.x, b.y); sctx.strokeStyle = `rgba(178,80,181,${0.22 * (1 - d / 110)})`; sctx.stroke(); }
       }
     }
+    for (let i = tapBursts.length - 1; i >= 0; i--) {
+      const b = tapBursts[i];
+      sctx.beginPath(); sctx.arc(b.x, b.y, 6 + (1 - b.life) * 26, 0, 7);
+      sctx.strokeStyle = `rgba(255,214,238,${b.life * 0.8})`; sctx.lineWidth = 1.5; sctx.stroke();
+      sctx.beginPath(); sctx.arc(b.x, b.y, 2.2, 0, 7); sctx.fillStyle = `rgba(255,235,246,${b.life})`; sctx.fill();
+      b.life -= 0.035;
+      if (b.life <= 0) tapBursts.splice(i, 1);
+    }
   }
   function starLoop() { starFrame(); requestAnimationFrame(starLoop); }
   window.addEventListener("resize", initStars);
   window.addEventListener("pointermove", e => { smouse.x = e.clientX; smouse.y = e.clientY; }, { passive: true });
+  // 触屏点空白处：星光在指尖迸发
+  document.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "touch") return;
+    if (/button|a|input|select|textarea|label/i.test(e.target.tagName)) return;
+    tapBursts.push({ x: e.clientX, y: e.clientY, life: 1 });
+  }, { passive: true });
+  const isMobileView = window.matchMedia("(max-width:600px)").matches;
   initStars();
   if (reduceMotion) starFrame(); else starLoop();
 

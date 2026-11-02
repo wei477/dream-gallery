@@ -92,3 +92,12 @@ main{position:relative;z-index:1}
 .game-star{position:absolute;width:34px;height:34px;cursor:pointer;display:grid;place-items:center;color:#ffd98a;font-size:26px;filter:drop-shadow(0 0 8px #f4c46a);user-select:none}
 .game-tip{font-size:12px;letter-spacing:1px;color:#9a8bb0;text-align:center;margin:14px 0 0}
 @media(max-width:600px){.daily-card{padding:30px 22px}.game-area{height:280px}.game-hud{gap:14px}.daily-verse{font-size:19px}}
+:root{--scrollHp:0}
+.ambient-a{transform:translateY(calc(var(--scrollHp)*140px))}
+.ambient-b{transform:translateY(calc(var(--scrollHp)*-140px))}
+.hero-art{opacity:calc(1 - var(--scrollHp)*.35)}
+@media(max-width:600px){
+  .star-dot{width:2.5px;height:2.5px}
+  .hero .star-dot{animation-duration:2.4s}
+  .petal{width:10px;height:15px}
+}
