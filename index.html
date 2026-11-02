@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17132f">
+  <meta name="description" content="一座漂浮在云端的梦境美术馆，邀请你走进光与想象交织的世界。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L61 39 L95 50 L61 61 L50 95 L39 61 L5 50 L39 39 Z' fill='%23f4a8d3'/%3E%3C/svg%3E">
+  <title>梦境美术馆 · The Dream Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+SC:wght@300;400;500;600&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <canvas class="star-canvas" id="starCanvas" aria-hidden="true"></canvas>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="topbar" id="top">
+    <a class="brand" href="#home" aria-label="梦境美术馆首页">
+      <span class="brand-mark">✧</span>
+      <span class="brand-text"><b>梦境美术馆</b><small>THE DREAM GALLERY</small></span>
+    </a>
+    <button class="mobile-menu" id="mobileMenu" aria-label="打开导航">☰</button>
+    <nav class="main-nav" id="mainNav" aria-label="主导航">
+      <a class="active" href="#home">首页 <i>HOME</i></a>
+      <a href="#exhibitions">梦境展厅 <i>GALLERIES</i></a>
+      <a href="#daily">今日签 <i>DAILY</i></a>
+      <a href="#stargame">星游戏 <i>MINI GAME</i></a>
+      <a href="#about">关于美术馆 <i>ABOUT</i></a>
+    </nav>
+    <div class="top-actions">
+      <button class="sound-toggle" id="soundToggle" aria-pressed="false" title="打开氛围音乐"><span class="sound-icon">♫</span><span id="soundLabel">氛围音乐</span><span class="sound-state" id="soundState">OFF</span></button>
+      <button class="icon-button" id="fullscreenButton" aria-label="切换全屏" title="全屏欣赏">⛶</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home" aria-label="梦境美术馆首页">
+      <div class="hero-art" id="heroArt"></div>
+      <div class="hero-shade"></div>
+      <div class="hero-vignette"></div>
+      <div class="stars" id="stars" aria-hidden="true"></div>
+      <div class="petal-layer" id="petals" aria-hidden="true"></div>
+
+      <div class="hero-content">
+        <div class="eyebrow"><span class="eyebrow-line"></span> A WORLD MADE OF DREAMS <span class="eyebrow-line"></span></div>
+        <p class="hero-pretitle">在现实与幻想的交界处</p>
+        <h1>梦境<span>美术馆</span></h1>
+        <p class="hero-subtitle" id="heroTyping">这里，收藏着所有关于美好的想象。</p>
+        <p class="hero-copy">愿你在每一束光里，都能遇见心中柔软而闪耀的风景。</p>
+        <button class="enter-button" id="enterGallery"><span class="enter-star">✧</span> 开启梦境之旅 <span class="enter-arrow">↗</span></button>
+        <div class="hero-caption"><span class="caption-dot"></span> 一场关于光、花与星辰的漫游</div>
+      </div>
+
+      <div class="hero-side-note"><span>LET YOUR MIND WANDER</span><i></i><b>把心交给一场梦</b></div>
+      <a class="scroll-cue" href="#exhibitions"><span class="scroll-mouse"><i></i></span><small>向下探索</small><b>↓</b></a>
+      <div class="hero-index"><span>01</span><i></i><span>04</span></div>
+    </section>
+
+    <section class="exhibitions section-shell" id="exhibitions">
+      <div class="section-heading reveal">
+        <div class="section-overline">EXPLORE THE DREAMS</div>
+        <h2>选择一场<span>梦境</span></h2>
+        <p>每一扇门后，都有一片不同的温柔宇宙。</p>
+      </div>
+      <div class="gallery-grid">
+        <button class="gallery-card card-cherry reveal" data-scene="0" aria-label="进入樱之庭展厅">
+          <span class="card-number">01 / GALLERY</span><span class="card-art"></span><span class="card-bottom"><span><b>樱之庭</b><small>CHERRY BLOSSOM · 春日幻想</small></span><i>↗</i></span>
+        </button>
+        <button class="gallery-card card-moon reveal" data-scene="1" aria-label="进入月光回廊展厅">
+          <span class="card-number">02 / GALLERY</span><span class="card-art"></span><span class="card-bottom"><span><b>月光回廊</b><small>MOONLIT HALL · 静谧月色</small></span><i>↗</i></span>
+        </button>
+        <button class="gallery-card card-ocean reveal" data-scene="2" aria-label="进入海蓝秘境展厅">
+          <span class="card-number">03 / GALLERY</span><span class="card-art"></span><span class="card-bottom"><span><b>海蓝秘境</b><small>AZURE DREAM · 深海幻想</small></span><i>↗</i></span>
+        </button>
+        <button class="gallery-card card-cloud reveal" data-scene="3" aria-label="进入云端之境展厅">
+          <span class="card-number">04 / GALLERY</span><span class="card-art"></span><span class="card-bottom"><span><b>云端之境</b><small>CLOUD NINE · 漫游天际</small></span><i>↗</i></span>
+        </button>
+        <button class="gallery-card card-ziling" id="eggCard" aria-label="进入紫菱的专属梦境" hidden>
+          <span class="card-number">05 / HIDDEN</span><span class="card-art"></span><span class="card-bottom"><span><b>紫菱梦境</b><small>ZILING'S DREAM · 只给你一个人</small></span><i>↗</i></span>
+        </button>
+      </div>
+      <div class="gallery-foot reveal"><span>✦</span> 每一场梦，都值得被认真看见 <span>✦</span></div>
+    </section>
+
+    <section class="dream-stats" id="stats">
+      <div class="stat-item reveal"><b class="stat-num" data-count="4">0</b><span>场梦境</span></div>
+      <div class="stat-item reveal"><b class="stat-num" data-count="70">0</b><span>颗星辰</span></div>
+      <div class="stat-item reveal"><b class="stat-num" data-count="22">0</b><span>片花瓣</span></div>
+      <div class="stat-item reveal"><b class="stat-num" data-count="100" data-suffix="%">0</b><span>的温柔</span></div>
+    </section>
+
+    <section class="daily-shell section-shell" id="daily">
+      <div class="section-heading reveal">
+        <div class="section-overline">TODAY'S DREAM</div>
+        <h2>今日<span>梦境签</span></h2>
+        <p>每天一支签，给今天的心情一个小指引。</p>
+      </div>
+      <div class="daily-card reveal" id="dailyCard"></div>
+    </section>
+
+    <section class="game-shell section-shell" id="stargame">
+      <div class="section-heading reveal">
+        <div class="section-overline">CATCH THE STARS</div>
+        <h2>接住<span>幸运星</span></h2>
+        <p>30 秒内点亮尽可能多的星星，看看今天的手气。</p>
+      </div>
+      <div class="game-card reveal">
+        <div class="game-hud">
+          <span>得分 <b id="gameScore">0</b></span>
+          <span>剩余 <b id="gameTimer">30</b>s</span>
+          <button class="game-start" id="gameStart" type="button">开始游戏</button>
+        </div>
+        <div class="game-area" id="gameArea"></div>
+        <p class="game-tip" id="gameTip">点「开始游戏」，星星会从上面落下来，点中一颗得 1 分。</p>
+      </div>
+    </section>
+
+    <section class="quiz-shell section-shell" id="quiz">
+      <div class="section-heading reveal">
+        <div class="section-overline">FIND YOUR DREAM</div>
+        <h2>哪一场梦，<span>正在等你</span></h2>
+        <p>回答三个小问题，让梦境自己来挑选你。</p>
+      </div>
+      <div class="quiz-card reveal">
+        <div class="quiz-progress"><span id="quizBar"></span></div>
+        <div class="quiz-step" id="quizStep"></div>
+      </div>
+    </section>
+
+    <section class="wish-shell section-shell" id="wishes">
+      <div class="section-heading reveal">
+        <div class="section-overline">MAKE A WISH</div>
+        <h2>梦境<span>许愿池</span></h2>
+        <p>悄悄写下一个愿望，让星星替你保管，只有你自己看得见。</p>
+      </div>
+      <div class="wish-box reveal">
+        <input type="text" id="wishInput" maxlength="40" placeholder="写点什么吧……">
+        <button class="wish-send" id="wishSend" type="button">许下愿望</button>
+      </div>
+      <div class="wish-list" id="wishList"></div>
+      <p class="wish-empty" id="wishEmpty">还没有愿望，先丢下第一颗星星吧。</p>
+    </section>
+
+    <section class="interlude" id="about">
+      <div class="interlude-orb"></div><div class="interlude-stars">✧　·　✦　·　✧</div>
+      <div class="interlude-content reveal"><div class="section-overline">A QUIET PLACE FOR WONDER</div><h2>愿你在这里，<br><em>遇见片刻的永恒。</em></h2><p>有些风景不必抵达，有些浪漫只需静静欣赏。<br>愿这座小小的美术馆，成为你随时可以回来的梦。</p><div class="interlude-sign">THE DREAM GALLERY <span>✧</span></div></div>
+      <div class="interlude-ring ring-one"></div><div class="interlude-ring ring-two"></div>
+    </section>
+  </main>
+
+  <footer><a class="footer-brand" href="#home">✧ 梦境美术馆</a><span>MADE OF LIGHT · DREAMS · WONDER</span><a href="#top">回到顶部 ↑</a></footer>
+
+  <div class="scene-modal" id="sceneModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-panel">
+      <button class="modal-close" id="modalClose" aria-label="关闭展厅">×</button>
+      <div class="modal-image" id="modalImage"><div class="modal-image-shade"></div><span class="modal-art-label" id="modalArtLabel">DREAM GALLERY</span></div>
+      <div class="modal-copy"><div class="section-overline" id="modalEn">CHERRY BLOSSOM</div><h2 id="modalTitle">樱之庭</h2><p id="modalDescription"></p><div class="modal-actions"><button class="modal-prev" id="modalPrev">← 上一场梦</button><span id="modalCount">01 / 04</span><button class="modal-next" id="modalNext">下一场梦 →</button></div></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <button class="back-top" id="backTop" aria-label="回到顶部" type="button">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
