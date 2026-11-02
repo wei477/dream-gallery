@@ -299,7 +299,7 @@
       let best = 0;
       quizVotes.forEach((v, i) => { if (v > quizVotes[best]) best = i; });
       const scene = scenes[best];
-      quizStep.innerHTML = `<div class="quiz-result"><div class="qr-icon">✧</div><h3>${scene.name}</h3><p>${scene.description}</p><div class="quiz-actions"><button class="quiz-primary" id="quizEnter" type="button">进入这场梦</button><button class="quiz-ghost" id="quizRetry" type="button">重新测一次</button></div>`;
+      quizStep.innerHTML = `<div class="quiz-result"><div class="qr-icon">✧</div><h3>${scene.name}</h3><p>${scene.description}</p><div class="quiz-actions"><button class="quiz-primary" id="quizEnter" type="button">进入这场梦</button><button class="quiz-ghost" id="quizRetry" type="button">重新测一次</button></div></div>`;
       $("quizEnter").addEventListener("click", () => showScene(best));
       $("quizRetry").addEventListener("click", () => { quizIndex = 0; quizVotes = [0, 0, 0, 0]; renderQuiz(); });
     }
@@ -356,40 +356,42 @@
         r: isMobileView ? Math.random() * 1.8 + 0.9 : Math.random() * 1.6 + 0.5
       });
     }
-    function starFrame() {
-      sctx.clearRect(0, 0, SW, SH);
-      for (const p of spts) {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = SW; if (p.x > SW) p.x = 0; if (p.y < 0) p.y = SH; if (p.y > SH) p.y = 0;
-        sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 7);
-        sctx.fillStyle = isMobileView ? "rgba(255,214,238,.95)" : "rgba(244,196,223,.85)";
-        sctx.fill();
-        const d = Math.hypot(p.x - smouse.x, p.y - smouse.y);
-        if (d < 140) { sctx.beginPath(); sctx.moveTo(p.x, p.y); sctx.lineTo(smouse.x, smouse.y); sctx.strokeStyle = `rgba(244,168,211,${0.35 * (1 - d / 140)})`; sctx.stroke(); }
-      }
-      for (let i = 0; i < spts.length; i++) {
-        for (let j = i + 1; j < spts.length; j++) {
-          const a = spts[i], b = spts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 110) { sctx.beginPath(); sctx.moveTo(a.x, a.y); sctx.lineTo(b.x, b.y); sctx.strokeStyle = `rgba(178,80,181,${0.22 * (1 - d / 110)})`; sctx.stroke(); }
-        }
-      }
-      for (let i = tapBursts.length - 1; i >= 0; i--) {
-        const b = tapBursts[i];
-        sctx.beginPath(); sctx.arc(b.x, b.y, 6 + (1 - b.life) * 26, 0, 7);
-        sctx.strokeStyle = `rgba(255,214,238,${b.life * 0.8})`; sctx.lineWidth = 1.5; sctx.stroke();
-        sctx.beginPath(); sctx.arc(b.x, b.y, 2.2, 0, 7); sctx.fillStyle = `rgba(255,235,246,${b.life})`; sctx.fill();
-        b.life -= 0.035;
-        if (b.life <= 0) tapBursts.splice(i, 1);
+  function starFrame() {
+    sctx.clearRect(0, 0, SW, SH);
+    for (const p of spts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = SW; if (p.x > SW) p.x = 0; if (p.y < 0) p.y = SH; if (p.y > SH) p.y = 0;
+      sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 7);
+      sctx.fillStyle = isMobileView ? "rgba(255,214,238,.95)" : "rgba(244,196,223,.85)";
+      sctx.fill();
+      const d = Math.hypot(p.x - smouse.x, p.y - smouse.y);
+      if (d < 140) { sctx.beginPath(); sctx.moveTo(p.x, p.y); sctx.lineTo(smouse.x, smouse.y); sctx.strokeStyle = `rgba(244,168,211,${0.35 * (1 - d / 140)})`; sctx.stroke(); }
+    }
+    for (let i = 0; i < spts.length; i++) {
+      for (let j = i + 1; j < spts.length; j++) {
+        const a = spts[i], b = spts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < 110) { sctx.beginPath(); sctx.moveTo(a.x, a.y); sctx.lineTo(b.x, b.y); sctx.strokeStyle = `rgba(178,80,181,${0.22 * (1 - d / 110)})`; sctx.stroke(); }
       }
     }
+    for (let i = tapBursts.length - 1; i >= 0; i--) {
+      const b = tapBursts[i];
+      sctx.beginPath(); sctx.arc(b.x, b.y, 6 + (1 - b.life) * 26, 0, 7);
+      sctx.strokeStyle = `rgba(255,214,238,${b.life * 0.8})`; sctx.lineWidth = 1.5; sctx.stroke();
+      sctx.beginPath(); sctx.arc(b.x, b.y, 2.2, 0, 7); sctx.fillStyle = `rgba(255,235,246,${b.life})`; sctx.fill();
+      b.life -= 0.035;
+      if (b.life <= 0) tapBursts.splice(i, 1);
+    }
+  }
     function starLoop() { starFrame(); requestAnimationFrame(starLoop); }
     function handleResize() {
       initStars();
+      // 减少动画模式下循环已停止，resize 后必须手动补一帧，否则画布清空后星星消失
       if (reduceMotion) starFrame();
     }
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleResize);
     window.addEventListener("pointermove", e => { smouse.x = e.clientX; smouse.y = e.clientY; }, { passive: true });
+    // 触屏点空白处：星光在指尖迸发
     document.addEventListener("pointerdown", e => {
       if (e.pointerType !== "touch") return;
       if (/button|a|input|select|textarea|label/i.test(e.target.tagName)) return;
@@ -397,10 +399,12 @@
     }, { passive: true });
     initStars();
     if (reduceMotion) starFrame(); else starLoop();
+    // 系统动态开启「减少动态效果」时，立即补一帧静态星空
     window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", e => {
       if (e.matches) starFrame();
     });
   } catch (err) {
+    // Canvas 不可用或初始化失败：隐藏画布，Hero 内仍保留 CSS 星星作为兜底
     starCanvas.style.display = "none";
   }
 
@@ -422,6 +426,7 @@
   }
   typeLoop();
 
+  // 展厅卡片 3D 倾斜（桌面）
   if (window.matchMedia("(hover:hover) and (pointer:fine)").matches) {
     document.querySelectorAll(".gallery-card").forEach(card => {
       card.addEventListener("pointermove", e => {
@@ -433,6 +438,7 @@
     });
   }
 
+  // 今日梦境签
   function renderDaily() {
     const now = new Date();
     const seed = now.getFullYear() * 1000 + (now.getMonth() + 1) * 40 + now.getDate();
@@ -450,6 +456,7 @@
   }
   renderDaily();
 
+  // 接星星小游戏
   let gameRunning = false, gameLeft = 30, gameScoreVal = 0, gameCountTimer = null, spawnTimer = null;
   const gameArea = $("gameArea");
   function spawnStar() {
@@ -508,6 +515,7 @@
     if (!isPortrait()) rotateHint.classList.remove("show");
     else if (!rotateDismissed) rotateHint.classList.add("show");
   }
+  // 同时监听 orientationchange 与 resize，兼容只触发 resize 的环境
   window.addEventListener("orientationchange", syncRotateHint);
   window.addEventListener("resize", syncRotateHint);
 })();
