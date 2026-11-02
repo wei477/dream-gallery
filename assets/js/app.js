@@ -45,7 +45,7 @@
     $("modalEn").textContent = scene.en;
     $("modalTitle").textContent = scene.name;
     $("modalDescription").textContent = scene.description;
-    $("modalCount").textContent = `${String(currentScene + 1).padStart(2, "0")} / 04`;
+    $("modalCount").textContent = `${String(currentScene + 1).padStart(2, "0") / 04}`;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
@@ -309,7 +309,7 @@
   const wishInput = $("wishInput"), wishList = $("wishList"), wishEmpty = $("wishEmpty");
   let wishes = [];
   try { wishes = JSON.parse(localStorage.getItem("dream_gallery_wishes") || "[]"); } catch (_) { wishes = []; }
-  function escapeHtml(str) { return str.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+  function escapeHtml(str) { return str.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", "&gt;": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
   function saveWishes() { try { localStorage.setItem("dream_gallery_wishes", JSON.stringify(wishes)); } catch (_) {} }
   function renderWishes() {
     wishList.innerHTML = wishes.map((w, i) => `<div class="wish-item"><button class="wish-del" data-i="${i}" type="button" aria-label="删除愿望">×</button><p>${escapeHtml(w.text)}</p><small>${w.time}</small></div>`).join("");
@@ -475,5 +475,24 @@
       gameLeft--; $("gameTimer").textContent = gameLeft;
       if (gameLeft <= 0) endGame();
     }, 1000);
+  });
+
+  // 横屏旋转提示（仅触屏竖屏）
+  const rotateHint = $("rotateHint");
+  const isTouchDevice = window.matchMedia("(pointer:coarse)").matches;
+  let rotateDismissed = false;
+  try { rotateDismissed = sessionStorage.getItem("dream_gallery_rotate_dismissed") === "1"; } catch (e) {}
+  function isPortrait() { return window.matchMedia("(orientation:portrait)").matches; }
+  if (isTouchDevice && !rotateDismissed) {
+    setTimeout(() => { if (isPortrait()) rotateHint.classList.add("show"); }, 2600);
+  }
+  $("rotateClose").addEventListener("click", () => {
+    rotateHint.classList.remove("show");
+    rotateDismissed = true;
+    try { sessionStorage.setItem("dream_gallery_rotate_dismissed", "1"); } catch (e) {}
+  });
+  window.addEventListener("orientationchange", () => {
+    if (!isPortrait()) rotateHint.classList.remove("show");
+    else if (!rotateDismissed) rotateHint.classList.add("show");
   });
 })();
