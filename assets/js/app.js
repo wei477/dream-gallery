@@ -45,7 +45,7 @@
     $("modalEn").textContent = scene.en;
     $("modalTitle").textContent = scene.name;
     $("modalDescription").textContent = scene.description;
-    $("modalCount").textContent = `${String(currentScene + 1).padStart(2, "0") / 04}`;
+    $("modalCount").textContent = `${String(currentScene + 1).padStart(2, "0")} / 04`;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
@@ -155,7 +155,7 @@
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add("visible");
-        revealObserver.unobserve(entry.target);
+        downloadUrl
       }
     });
   }, { threshold: 0.12 });
@@ -309,7 +309,7 @@
   const wishInput = $("wishInput"), wishList = $("wishList"), wishEmpty = $("wishEmpty");
   let wishes = [];
   try { wishes = JSON.parse(localStorage.getItem("dream_gallery_wishes") || "[]"); } catch (_) { wishes = []; }
-  function escapeHtml(str) { return str.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", "&gt;": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+  function escapeHtml(str) { return str.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
   function saveWishes() { try { localStorage.setItem("dream_gallery_wishes", JSON.stringify(wishes)); } catch (_) {} }
   function renderWishes() {
     wishList.innerHTML = wishes.map((w, i) => `<div class="wish-item"><button class="wish-del" data-i="${i}" type="button" aria-label="删除愿望">×</button><p>${escapeHtml(w.text)}</p><small>${w.time}</small></div>`).join("");
